@@ -87,15 +87,23 @@ export const StartCountdownButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+
   width: 100%;
   height: 4rem;
+  padding: 1rem;
+  border: 0;
+  border-radius: 8px;
 
   background-color: ${(props) => props.theme['green-500']};
-  border-radius: 8px;
   color: ${(props) => props.theme['gray-100']};
+  font-weight: bold;
 
   &:disabled {
-    color: ${(props) => props.theme['gray-400']};
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  &:disabled:hover {
     background-color: ${(props) => props.theme['green-700']};
   }
 
