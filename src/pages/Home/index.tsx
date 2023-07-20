@@ -1,10 +1,51 @@
 import { Play } from "phosphor-react";
-import { CountdownContainer, FormContainer, HomeContainer, MinutesAmountInput, Separator, StartCountdownButton, TaskInput } from "./styles";
+import { useForm } from "react-hook-form";
+
+import {
+  CountdownContainer,
+  FormContainer,
+  HomeContainer,
+  MinutesAmountInput,
+  Separator,
+  StartCountdownButton,
+  TaskInput
+} from "./styles";
+
+/*
+React Hook Form
+possui uma sintaxe estranha, mas funciona bem.
+useForm retorna um objeto com algumas funções.
+Usamos o register e handleSubmit, ambas funções.
+
+Register é uma função que recebe no primeiro parâmetro o nome do identificar, e depois recebe em objeto com possíveis opções adicionais
+uso: {...register("task-suggestions")}
+Como a função register retorna um outro objeto com várias opções de uso, usamos aqui o spread operator para espalhar na tag TODAS as opções disponíveis para uso como propriedade para a tag
+E  aqui estou falando de outras funções comuns, como OnBlur, OnChange, OnFocus, ref, required, max...
+
+HandleSubmit é uma outra função, que recebe como parâmetro outra função.
+E o uso disso é basicamente para triggar uma outra função durante o Submit
+
+
+*/
+type FormValues = {
+  task: string;
+  minutesAmount: number;
+}
 
 export function Home() {
+  const { register, handleSubmit, watch } = useForm<FormValues>();
+
+
+  function handleCreateNewCycle(data: unknown) {
+    console.log(data);
+  }
+
+  const task = watch('task');
+  const isSubmitDisabled = !task;
+
   return (
     <HomeContainer>
-      <form action="#">
+      <form onSubmit={handleSubmit(handleCreateNewCycle)}>
         <FormContainer>
           <label htmlFor="task">Vou trabalhar em</label>
           <TaskInput
@@ -12,6 +53,7 @@ export function Home() {
             id="task"
             list="task-suggestions"
             placeholder="Dê um nome para o seu projeto"
+            {...register('task')}
           />
 
           <datalist id="task-suggestions">
@@ -29,6 +71,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            {...register('minutesAmount', { valueAsNumber: true })}
           />
 
           <span>minutos.</span>
@@ -42,7 +85,7 @@ export function Home() {
           <span>0</span>
         </CountdownContainer>
 
-        <StartCountdownButton disabled type="submit">
+        <StartCountdownButton disabled={isSubmitDisabled} type="submit">
           <Play size={24} />
           Começar
         </StartCountdownButton>
