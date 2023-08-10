@@ -50,7 +50,7 @@ para integrar ao zod e aproveitar a extração de tipo direto da lib.
 */
 
 export function Home() {
-  const { register, handleSubmit, watch, formState } = useForm<FormValues>({
+  const { register, handleSubmit, watch, reset } = useForm<FormValues>({
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
       task: '',
@@ -61,10 +61,8 @@ export function Home() {
 
   function handleCreateNewCycle(data: FormValues) {
     console.log(data);
+    reset();
   }
-
-  console.log(formState.errors);
-  
 
   const task = watch('task');
   const isSubmitDisabled = !task;
