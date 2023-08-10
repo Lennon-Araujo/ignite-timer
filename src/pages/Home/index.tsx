@@ -29,23 +29,37 @@ E o uso disso é basicamente para triggar uma outra função durante o Submit
 
 
 */
-type FormValues = {
-  task: string;
-  minutesAmount: number;
-}
+
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'Informe a tarefa'),
   minutesAmount: zod.number().min(5).max(60)
 })
 
+// interface FormValues {
+//   task: string;
+//   minutesAmount: number;
+// }
+
+type FormValues = zod.infer<typeof newCycleFormValidationSchema>
+
+/*
+Aqui deixei de usar a interface (normalmente usada pra criar do zero o tipo)
+Para usar um type (normalmente usado pra extrair um tipo de outro local)
+para integrar ao zod e aproveitar a extração de tipo direto da lib.
+*/
+
 export function Home() {
   const { register, handleSubmit, watch, formState } = useForm<FormValues>({
-    resolver: zodResolver(newCycleFormValidationSchema)
+    resolver: zodResolver(newCycleFormValidationSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    }
   });
 
 
-  function handleCreateNewCycle(data: unknown) {
+  function handleCreateNewCycle(data: FormValues) {
     console.log(data);
   }
 
