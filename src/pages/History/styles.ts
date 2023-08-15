@@ -72,7 +72,7 @@ const STATUS_COLORS = {
 // Ao passar as cores como parâmetro para linkar com um thema, o Typescript reconheceu que algo poderia dar errado.
 // Afinal sendo string poderia ser qualquer coisa, inclusive uma cor inexistente.
 // Tentei incluir uma validação e não foi suficiente.
-// Nesse caso, tive que dizer que que STATUS_COLOR as const para TS entender que nunca vai mudar.
+// Nesse caso, tive que dizer que STATUS_COLOR as const para TS entender que nunca vai mudar.
 // Além disso, usei a sintaxe abaixo  de keyof STATUS_COLOR que promete pegar as CHAVES do Objeto STATUS_COLOR como tipagem.
 // Porém, por sintaxe acrescenta-se o typeof, porque assim o TS consegue pegar as chaves corretamente. 
 interface StatusProps {
