@@ -29,11 +29,30 @@ interface CyclesContextPropType {
   children: ReactNode;
 }
 
+interface CyclesState {
+  cycles: Cycle[],
+  activeCycleId: string | null;
+}
+
 export const CyclesContext = createContext({} as CyclesContextType)
 
 export function CyclesContextProvider({ children }: CyclesContextPropType) {
   // const [cycles, setCycles] = useState<Cycle[]>([]);
-  const [cycles, dispatch] = useReducer((state: Cycle[], action: any) => {
+  const [cyclesState, dispatch] = useReducer((state: CyclesState, action: any) => {
+  // Aqui eu mudei de useState pra useReducer que pode controlar vários estados ao mesmo tempo
+  // Sintaxe, recebe 2 parâmetros, o primeiro é função e o segundo é o inicial dos estados
+  // Na função passamos 2 parâmetros também, o STATE e o ACTION.
+  // O STATE são todos os estados que iremos controlar.
+  // Na desestruturação em Array (assim como no useState) vamos colocar o nome da variável que receberá todos os estados usados.
+  // Nesse caso, estou usando cyclesState, mas como já estava usando cycles e activeCycleId no restante do código, em seguida fiz a desestrutução de cyclesState criando variáveis cycles e activeCycleId para que continuassem sendo usadas
+  // state então passa a ser um objeto que recebe os estados
+  // o ACTION são as ações que serão disparadas, na desestruturação em Array, o segundo parametro será DISPATCH que literalmente será usado para DISPARAR as actions
+  // o dispatch então vai ser usados onde usaríamos o setState, porém passando um objeto, com TYPE, com o nome da action e o PAYLOAD, com os datos que serão usados.
+  // Então eu uso a função do useReducer pra capturar o disparo, e assim fazer o que eu quiser com os dados passados no payload.
+
+  // Aqui, eu estou controlando as funções de Criar cycle, marcar como concluído e interromper ciclo.
+  // Removi os states que controlavam os cycles, e o state que controlava o ID do cycle ativo (activeCycleId)
+  // Controlando os dois com o reducer
     
     console.log(state);
     console.log(action);
@@ -41,19 +60,51 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (action.type === "CREATE_NEW_CYCLE") {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      return [...state, action.payload.newCycle];
+      return {
+        ...state,
+        cycles: [...state.cycles, action.payload.newCycle],
+        activeCycleId: action.payload.newCycle.id,
+      }
+    }
+
+    if (action.type === "INTERRUPT_CURRENT_CYCLE") {
+      return {
+        ...state,
+        cycles: state.cycles.map(cycle => {
+            if (cycle.id === state.activeCycleId) {
+              return { ...cycle, interruptDate: new Date() }
+            } else {
+              return cycle
+            }
+          }),
+        activeCycleId: null
+      }
+    }
+
+    if (action.type === "MARK_CURRENT_CYCLE_AS_FINISHED") {
+      return {
+        ...state,
+        cycles: state.cycles.map(cycle => {
+            if (cycle.id === state.activeCycleId) {
+              return { ...cycle, finishedDate: new Date() }
+            } else {
+              return cycle
+            }
+          }),
+        activeCycleId: null,
+      }
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return state;
-  }, [])
+  }, {
+    cycles: [],
+    activeCycleId: null,
+  })
 
-
-
-
-
-  const [activeCycleId, setActiveCycleId] = useState<string | null>(null);
+  
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
-
+  
+  const { cycles, activeCycleId } = cyclesState;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
   const activeCycle = cycles.find(cycle => cycle.id === activeCycleId)
 
@@ -98,13 +149,13 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
     })
 
     // setCycles((state) => [...state, newCycle])
-    setActiveCycleId(id)
+    // setActiveCycleId(id)
     setAmountSecondsPassed(0)
   }
 
   function interruptCurrentCycle() {
     dispatch({
-      type: "CREATE_NEW_CYCLE",
+      type: "INTERRUPT_CURRENT_CYCLE",
       payload: {
         activeCycleId
       }
@@ -118,7 +169,7 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
     //   }
     // }))
 
-    setActiveCycleId(null)
+    // setActiveCycleId(null)
   }
 
 
