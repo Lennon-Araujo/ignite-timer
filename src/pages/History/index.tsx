@@ -35,14 +35,14 @@ export function History() {
                   <td>{cycle.task}</td>
                   <td>{cycle.minutesAmount} {cycle.minutesAmount > 1 ? "minutos" : "minuto"}</td>
                   <td 
-                    title={formatDateToDayMonthAndTime(cycle.startDate)}  
+                    title={formatDateToDayMonthAndTime(new Date(cycle.startDate))}  
                   >
-                    {formatDistanceToNow(cycle.startDate, { addSuffix: true, locale: ptBr })}
+                    {formatDistanceToNow(new Date(cycle.startDate), { addSuffix: true, locale: ptBr })}
                   </td>
                   <td>
-                    { cycle.finishedDate && <Status statusColor="green">Concluído</Status> }
-                    { cycle.interruptDate && <Status statusColor="red">Interrompido</Status> }
-                    { !cycle.finishedDate && !cycle.interruptDate && (<Status statusColor="yellow">Em andamento</Status>) }
+                    { cycle.finishedDate && <Status statuscolor="green">Concluído</Status> }
+                    { cycle.interruptDate && <Status statuscolor="red">Interrompido</Status> }
+                    { !cycle.finishedDate && !cycle.interruptDate && (<Status statuscolor="yellow">Em andamento</Status>) }
 
                   </td>
                 </tr>

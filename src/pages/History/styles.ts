@@ -76,7 +76,7 @@ const STATUS_COLORS = {
 // Além disso, usei a sintaxe abaixo  de keyof STATUS_COLOR que promete pegar as CHAVES do Objeto STATUS_COLOR como tipagem.
 // Porém, por sintaxe acrescenta-se o typeof, porque assim o TS consegue pegar as chaves corretamente. 
 interface StatusProps {
-  statusColor: keyof typeof STATUS_COLORS
+  statuscolor: keyof typeof STATUS_COLORS
 }
 
 export const Status = styled.span<StatusProps>`
@@ -89,6 +89,6 @@ export const Status = styled.span<StatusProps>`
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 9999px;
-    background-color: ${(props) => props.theme[STATUS_COLORS[props.statusColor]]};
+    background-color: ${(props) => props.theme[STATUS_COLORS[props.statuscolor]]};
   }
 `;
