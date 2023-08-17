@@ -1,17 +1,9 @@
 import { ReactNode, createContext, useReducer, useState } from "react";
+import { ActionTypes, Cycle, cyclesReducer } from "../reducers/cycles";
 
 interface CreateCycleData {
   task: string;
   minutesAmount: number;
-}
-
-interface Cycle {
-  id: string;
-  task: string;
-  minutesAmount: number;
-  startDate: Date;
-  interruptDate?: Date;
-  finishedDate?: Date;
 }
 
 interface CyclesContextType {
@@ -29,16 +21,15 @@ interface CyclesContextPropType {
   children: ReactNode;
 }
 
-interface CyclesState {
-  cycles: Cycle[],
-  activeCycleId: string | null;
-}
-
 export const CyclesContext = createContext({} as CyclesContextType)
 
 export function CyclesContextProvider({ children }: CyclesContextPropType) {
   // const [cycles, setCycles] = useState<Cycle[]>([]);
-  const [cyclesState, dispatch] = useReducer((state: CyclesState, action: any) => {
+  const [cyclesState, dispatch] = useReducer(cyclesReducer,
+    {
+      cycles: [],
+      activeCycleId: null,
+    })
   // Aqui eu mudei de useState pra useReducer que pode controlar vários estados ao mesmo tempo
   // Sintaxe, recebe 2 parâmetros, o primeiro é função e o segundo é o inicial dos estados
   // Na função passamos 2 parâmetros também, o STATE e o ACTION.
@@ -53,55 +44,8 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
   // Aqui, eu estou controlando as funções de Criar cycle, marcar como concluído e interromper ciclo.
   // Removi os states que controlavam os cycles, e o state que controlava o ID do cycle ativo (activeCycleId)
   // Controlando os dois com o reducer
-    
-    console.log(state);
-    console.log(action);
-    
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (action.type === "CREATE_NEW_CYCLE") {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      return {
-        ...state,
-        cycles: [...state.cycles, action.payload.newCycle],
-        activeCycleId: action.payload.newCycle.id,
-      }
-    }
 
-    if (action.type === "INTERRUPT_CURRENT_CYCLE") {
-      return {
-        ...state,
-        cycles: state.cycles.map(cycle => {
-            if (cycle.id === state.activeCycleId) {
-              return { ...cycle, interruptDate: new Date() }
-            } else {
-              return cycle
-            }
-          }),
-        activeCycleId: null
-      }
-    }
 
-    if (action.type === "MARK_CURRENT_CYCLE_AS_FINISHED") {
-      return {
-        ...state,
-        cycles: state.cycles.map(cycle => {
-            if (cycle.id === state.activeCycleId) {
-              return { ...cycle, finishedDate: new Date() }
-            } else {
-              return cycle
-            }
-          }),
-        activeCycleId: null,
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return state;
-  }, {
-    cycles: [],
-    activeCycleId: null,
-  })
-
-  
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
   
   const { cycles, activeCycleId } = cyclesState;
@@ -114,7 +58,7 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
 
   function markCurrentCycleAsFinished() {
     dispatch({
-      type: "MARK_CURRENT_CYCLE_AS_FINISHED",
+      type: ActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED,
       payload: {
         activeCycleId
       }
@@ -142,7 +86,7 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
     }
 
     dispatch({
-      type: "CREATE_NEW_CYCLE",
+      type: ActionTypes.CREATE_NEW_CYCLE,
       payload: {
         newCycle
       }
@@ -155,7 +99,7 @@ export function CyclesContextProvider({ children }: CyclesContextPropType) {
 
   function interruptCurrentCycle() {
     dispatch({
-      type: "INTERRUPT_CURRENT_CYCLE",
+      type: ActionTypes.INTERRUPT_CURRENT_CYCLE,
       payload: {
         activeCycleId
       }
